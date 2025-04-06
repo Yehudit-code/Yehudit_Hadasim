@@ -13,19 +13,12 @@ app.use(express.json())
 app.use(express.static("public"))
 app.use(cors())
 
-
-
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send("Hello world!!")
-    })
-// app.use("/photo", require("./routers/photoRouter"))
-// app.use("/post", require("./routers/postRouter"))
-// app.use("/todo", require("./routers/todoRouter"))
-// app.use("/user", require("./routers/userRouter"))
+})
 
-// app.get("/getser",(req,res) => {
-// res.json("get")
-// })
+app.use('/api/suppliers', require('./routers/supplierRouter'));
+app.use('/api/orders', require('./routers/orderRouter'));
 
 mongoose.connection.once('open', () => {
     console.log(`connected to MongoDB`)
