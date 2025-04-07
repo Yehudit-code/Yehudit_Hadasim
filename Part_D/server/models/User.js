@@ -1,33 +1,50 @@
-const mongoose = require ("mongoose")
-const { stringify } = require("querystring")
+const mongoose = require("mongoose")
+const Product = require("./Product")
 
 const userSchema = mongoose.Schema(
     {
         name: {
-            type:String,
+            type: String,
             required: true
         },
-        username:{
-            type:String,
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true
+        },
+        password: {
+            type: String,
             required: true
         },
-        email:{
-            type:String,
+        roles: {
+            type: String,
+            enum: ['supplier', 'owner'],
+            default: "supplier",
+        },
+        companyName: String,
+        phoneNumber: String,
+        representativeName: String,
+        email: {
+            type: String,
             trim: true,
             lowercase: true
         },
-        address:{
-            type:String
+        address: {
+            type: String
         },
-        phone:{
-            type: String,
-            required: true
-        }
-
-    },{
-        timestamp: true
-    }
+        phone: {
+            type: String
+        },
+        products: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product'
+        }]
+    }, {
+    timestamp: true
+}
 )
 
 module.exports = mongoose.model('User', userSchema)
-   
+

@@ -1,24 +1,24 @@
 const mongoose = require('mongoose');
-const Supplier = require('./Supplier');
-
-const OrderStatus = {
-    PENDING: 'ממתין',
-    IN_PROGRESS: 'בתהליך',
-    COMPLETED: 'הושלמה'
-};
-
-//   module.exports = OrderStatus;
+const User = require('./User');
 
 const orderSchema = new mongoose.Schema({
     supplierId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Supplier'
+        ref: 'User'
     },
+    productId: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
     dateOrder: {
         type: Date,
         default: Date.now
     },
-    status: { type: String, default: OrderStatus.PENDING }, // ממתין / בתהליך / הושלמה
-});
+    status: {
+        type: String,
+        enum: ['ממתין', 'בתהליך', 'הושלמה'],
+        default: "ממתין"
+    }
+})
 
-module.exports = mongoose.model('Order', orderSchema), OrderStatus;
+module.exports = mongoose.model('Order', orderSchema)

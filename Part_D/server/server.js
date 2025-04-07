@@ -17,8 +17,10 @@ app.get('/', (req, res) => {
     res.send("Hello world!!")
 })
 
-app.use('/api/suppliers', require('./routers/supplierRouter'));
-app.use('/api/orders', require('./routers/orderRouter'));
+app.use("/api/auth", require("./routers/authRouter"))
+app.use('/api/users', require('./routers/userRouter'))
+app.use('/api/orders', require('./routers/orderRouter'))
+app.use('/api/products', require('./routers/productRouter'))
 
 mongoose.connection.once('open', () => {
     console.log(`connected to MongoDB`)
