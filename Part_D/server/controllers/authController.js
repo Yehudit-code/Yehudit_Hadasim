@@ -7,13 +7,14 @@ const login = async (req, res) => {
         return res.status(400).json({ message: 'All fields are required' })
     }
     try {
-        const foundUser = await User.findOne({ username }).lean()
-        if (!foundUser || !foundUser.active) {
-            return res.status(401).json({ message: 'Unauthorized' })
+        const foundUser = await User.findOne({ username }).lean();
+        if (!foundUser) {
+            return res.status(401).json({ message: 'Unauthorized- User not found' })
         }
-        const match = await bcrypt.compare(password, foundUser.password)
-        if (!match) return res.status(401).json({ message: 'Unauthorized' })
-        res.send("Logged In")
+        const match = await User.findOne({password})
+        if (!match) return res.status(401).json({ message: 'Unauthorized -  Incorrect password' })
+        res.status(200).json({ message: 'Logged In', user: { username: foundUser.username } });
+
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -27,7 +28,7 @@ const register = async (req, res) => {
         const existing = await User.findOne({ username: username }).lean()
         if (existing) return res.status(400).json({ message: 'username already exists' })
         const hashedPwd = await bcrypt.hash(password, 10)
-        const userObject = { name, email, username, phone, password: hashedPwd, role, companyName, representativeName, phoneNumber, products }
+        const userObject = { name, email, username, phone, password: hashedPwd, role, companyName, representativeName, phoneNumber, products: products }
         const user = await User.create(userObject)
         if (user) { // Created
             return res.status(201).json({

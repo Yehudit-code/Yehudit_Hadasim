@@ -23,9 +23,10 @@ const createSupplier = async (req, res) => {
     if (!name || !username || !password) {
         return res.status(400).send("name,username and password are required")
     }
-    const supplier = await User.create({ name, username, password, roles, companyName, phoneNumber, representativeName, email, address, phone, products })
-    const result = await User.find()
-    res.json({ result })
+    const supplier = await User.create({ name, username, password, roles, companyName, phoneNumber, representativeName, email, address, phone, products:[] })
+    // const result = await User.find()
+    // res.json({ result })
+    res.status(201).json(supplier)
 }
 
 const createOwner = async (req, res) => {
