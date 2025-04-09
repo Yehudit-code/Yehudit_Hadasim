@@ -18,16 +18,47 @@ const getAllOrders = async (req, res) => {
     }
 }
 
+const getExistingOrders = async (req, res) => {
+    try {
+        console.log("Fetching all orders...");
+        const orders = await Order.find({ status: { $ne: 'הושלמה' } }, 'supplierId dateOrder status')
+            .populate('supplierId', 'name')
+            .lean();
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).send("No orders found!");
+        }
+
+        res.json(orders);
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}
+const getPendingOrders = async (req, res) => {
+
+    try {
+        // שליפת כל ההזמנות עם סטטוס "ממתין"
+        const pendingOrders = await Order.find({ status: 'ממתין' });
+        if (pendingOrders.length === 0) {
+            return res.status(404).json({ message: 'לא נמצאו הזמנות ממתינות' });
+        }
+        return res.status(200).json(pendingOrders);
+    } catch (error) {
+        console.error('Error fetching pending orders:', error);
+        return res.status(500).json({ message: 'שגיאה בשליפת הזמנות ממתינות' });
+    }
+}
 const getOrderByIDSuppliers = async (req, res) => {
     const { id } = req.params
-    try{
-    const orders = await User.find({ supplierId: id }, 'dateOrder status productId')
-        .populate('name', 'quantity').lean()
+    try {
+        const orders = await User.find({ supplierId: id }, 'dateOrder status productId')
+            .populate('name', 'quantity').lean()
         if (!orders || orders.length === 0) {
             return res.status(404).send("No orders found for this supplier!");
         }
-    res.json(orders)
-    }catch (error) {
+        res.json(orders)
+    } catch (error) {
         console.error("Error fetching orders for supplier:", error);
         res.status(500).send("Internal Server Error");
     }
@@ -65,4 +96,27 @@ const createOrders = async (req, res) => {
     res.json({ result });
 }
 
-module.exports = { getAllOrders, getOrderByIDSuppliers, createOrders }
+const updateOrderStatus = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        const updatedOrder = await Order.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).send("Order not found");
+        }
+
+        res.json(updatedOrder);
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+
+module.exports = { getAllOrders, getOrderByIDSuppliers, createOrders, getExistingOrders, updateOrderStatus, getPendingOrders }

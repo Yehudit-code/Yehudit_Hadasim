@@ -13,7 +13,7 @@ const login = async (req, res) => {
         }
         const match = await User.findOne({password})
         if (!match) return res.status(401).json({ message: 'Unauthorized -  Incorrect password' })
-        res.status(200).json({ message: 'Logged In', user: { username: foundUser.username } });
+        res.status(200).json({ message: 'Logged In', user: { username: foundUser.username ,roles:foundUser.roles} });
 
     } catch (err) {
         res.status(500).json({ message: 'Server error' });

@@ -8,13 +8,16 @@ const OwnerPage = () => {
     const [showSuppliers, setShowSuppliers] = useState(false);
     const [suppliers, setSuppliers] = useState([]); // שמירת הספקים מהשרת
     const [showOrders, setShowOrders] = useState(false);
+    const [showExistingOrders, setShowExistingOrders] = useState(false);
+    const [existingOrders, setExistingOrders] = useState([]); // שמירת הספקים מהשרת
     const [orders, setOrders] = useState([]); // שמירת הספקים מהשרת
+
     const [products, setProducts] = useState([]); // שמירת המוצרים של הספק
     const [showProducts, setShowProducts] = useState(false); // האם להציג את המוצרים
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [showCreateOrder, setShowCreateOrder] = useState(false);
     const [selectedSupplierId, setSelectedSupplierId] = useState(null);
-
+    const [error, setError] = useState(null)
     const handleViewSuppliers = async () => {
         try {
             const res = await axios.get("http://localhost:1555/api/users");
@@ -38,9 +41,14 @@ const OwnerPage = () => {
     };
 
     const handleViewExistingOrders = async () => {
-        const res = await fetch("/api/existing-orders");
-        const data = await res.json();
-        console.log(data);
+        try {
+            const res = await axios.get("http://localhost:1555/api/orders/existingOrders");
+            console.log(res.data);
+            setExistingOrders(res.data);
+            setShowExistingOrders(true);
+        } catch (err) {
+            console.error("Error fetching existing orders in client:", err);
+        }
     };
 
     const handleViewProducts = async (supplierId) => {
@@ -61,6 +69,54 @@ const OwnerPage = () => {
         setSelectedSupplierId(supplierId);
         setShowCreateOrder(true);
     };
+    const handleStatusClick = async (orderId) => {
+        try {
+            // עדכון הסטטוס ל-"בתהליך"
+            await axios.put(`http://localhost:1555/api/orders/${orderId}`, {
+                status: 'הושלמה',
+            });
+
+            // עדכון הרשימה בסטטוס החדש (בלי לקרוא שוב ל-fetchPendingOrders)
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order._id === orderId ? { ...order, status: 'בתהליך' } : order
+                )
+            );
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+    const toggleStatus = async (orderId, currentStatus) => {
+    let newStatus = null;
+
+    if (currentStatus === "ממתין") {
+        newStatus = "בתהליך";
+    } else if (currentStatus === "בתהליך") {
+        newStatus = "הושלמה";
+    }
+
+    if (!newStatus) return;
+
+    try {
+        await axios.put(`http://localhost:1555/api/orders/${orderId}`, {
+            status: newStatus,
+        });
+
+        setExistingOrders((prevOrders) =>
+            prevOrders.map((order) =>
+                order._id === orderId ? { ...order, status: newStatus } : order
+            )
+        );
+    } catch (err) {
+        console.error("Error updating status:", err);
+    }
+};
+
+    const handleBack = () => {
+        setOrders([])
+        setShowOrders(false)
+        setError(null)
+    }
     return (<>
         <div style={styles.topBar}>
             <button style={styles.button} onClick={handleViewSuppliers}>
@@ -104,19 +160,89 @@ const OwnerPage = () => {
                 </div>
             </div>
         )}
-        {showOrders && (
-            <div style={styles.supplierList}>
-                <h2>All Orders</h2>
-                {orders.map((order) => (
-                    <div key={order.name} style={styles.supplierCard}>
-                        <h3>{order.name}</h3>
-                        <p><strong>dateOrder:</strong> {order.dateOrder}</p>
-                        <p><strong>status:</strong> {order.status}</p>
-                    </div>
-
-                ))}
-
+        {showOrders && (<>
+            <div className="back-button-container">
+                <button className="back-button" onClick={handleBack}>Back</button>
             </div>
+            <div className="orders-container">
+                <h2>Orders</h2>
+                <table className="orders-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Supplier</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {orders.map((order, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{order.supplierId?.name || 'לא ידוע'}</td>
+                                <td>{order.dateOrder ? new Date(order.dateOrder).toLocaleDateString() : '---'}</td>
+                                <td>
+                                    {order.status === "ממתין" ? (
+                                        <button
+                                            className="btn-status waiting"
+                                            onClick={() => handleStatusClick(order._id)} // תיקון כאן
+                                        >
+                                            ממתין
+                                        </button>
+                                    ) : order.status === "בתהליך" ? (
+                                        <span className="btn-status in-progress">⏳ בתהליך</span>
+                                    ) : (
+                                        <span className="btn-status completed">🔒 הושלמה</span>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </>
+        )}
+        {showExistingOrders && (
+            <>
+                <div className="back-button-container">
+                    <button className="back-button" onClick={handleBack}>Back</button>
+                </div>
+                <div className="orders-container">
+                    <h2>Orders</h2>
+                    <table className="orders-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Supplier</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {existingOrders.map((order, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{order.supplierId?.name || 'לא ידוע'}</td>
+                                    <td>{order.dateOrder ? new Date(order.dateOrder).toLocaleDateString() : '---'}</td>
+                                    <td>
+                                        {order.status === "הושלמה" ? (
+                                            <span className="btn-status completed">🔒 הושלמה</span>
+                                        ) : (
+                                            <button
+                                                className={`btn-status ${order.status === "ממתין" ? "waiting" : "in-progress"
+                                                    }`}
+                                                onClick={() => toggleStatus(order._id, order.status)}
+                                            >
+                                                {order.status === "ממתין" ? "ממתין" : "⏳ בתהליך"}
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </>
         )}
         {showCreateOrder && (
             <CreateOrder supplierId={selectedSupplierId} goBack={goBackToSuppliers} />
@@ -152,6 +278,7 @@ const styles = {
         textAlign: "center",
         fontSize: "24px",
         fontWeight: "bold",
-    },
+    }
+    
 };
 export default OwnerPage;

@@ -1,0 +1,164 @@
+/* קונטיינר ראשי */
+.dashboard-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: #f4f4f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* כותרת הדשבורד */
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.dashboard-header .icon {
+    font-size: 36px;
+}
+
+.dashboard-header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+/* קבוצת כפתורים */
+.button-group {
+    margin-bottom: 20px;
+}
+
+.button-group .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.button-group .blue {
+    background-color: #007bff;
+    color: white;
+}
+
+.button-group .green {
+    background-color: #28a745;
+    color: white;
+}
+
+/* טבלת הזמנות */
+.orders-container {
+    margin-top: 20px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.orders-table th {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.orders-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* הודעות שגיאה */
+.error-message {
+    color: red;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* כפתור חזרה לעמוד הראשי */
+.back-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-button {
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+}
+
+.status-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.status-btn.pending {
+    background-color: #e2e8f0;
+    /* אפור בהיר */
+    color: #1e293b;
+    /* כחול כהה */
+}
+
+.status-btn.pending:hover {
+    background-color: #cbd5e1;
+    /* כהה יותר */
+}
+
+.status-btn.in-progress {
+    background-color: #facc15;
+    /* צהוב */
+    color: #1a1a1a;
+}
+
+.btn-status {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-status.waiting {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  .btn-status.waiting:hover {
+    background-color: #999;
+  }
+  
+  .btn-status.in-progress {
+    background-color: orange;
+    color: white;
+  }
+  
+  .btn-status.completed {
+    background-color: green;
+    color: white;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); display: inline-block; }
+    100% { transform: rotate(360deg); display: inline-block; }
+  }

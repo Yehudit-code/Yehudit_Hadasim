@@ -24,10 +24,20 @@ const LoginForm = ({ userType }) => {
             console.log(response.data); // "Logged In"
 
             if (userType === 'supplier') {
+                if(response.data.user.roles === 'supplier'){
                 navigate('/supplier');
+                }
+                else 
+                alert("You are the owner")
             }
-            if (userType === 'owner') {
+            if (userType === 'owner'  ) {
+                console.log(userType,response.data.user.roles)
+                if(response.data.user.roles === 'owner'){
                 navigate('/owner');
+                }
+                else {
+                alert("You are not authorized")
+                }
             }
         } catch (error) {
             // במקרה של שגיאה, נציג את הודעת השגיאה
