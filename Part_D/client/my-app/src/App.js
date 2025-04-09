@@ -17,7 +17,6 @@ function App() {
           <Route path="/" element={<UserTypeSelector />} />
           {/* <Route path="/login/admin" element={<OwnerLogin />} /> */}
           <Route path="/login/owner" element={<OwnerLogin />} />
-
           <Route path="/login/supplier" element={<SupplierLogin />} />
           <Route path="/register/supplier" element={<SupplierRegister />} />
           <Route path="/register/owner" element={<OwnerRegister />} />

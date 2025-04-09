@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     pricePerUnit: {
-        type: String,
+        type: Number,
         required: true
     },
     quantity: {

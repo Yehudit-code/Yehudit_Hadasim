@@ -11,8 +11,9 @@ const getAllProducts = async (req, res) => {
 
 const getProductsBySupplierID = async (req, res) => {
     const { id } = req.params
-    const products = await User.find({_id:id})
+    const products = await Product.find({supplierId:id})
     if (!products) {
+        res.send("no products")
         return res.status(404).send("no products")
     }
     res.json(products)
